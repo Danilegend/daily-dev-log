@@ -2,35 +2,30 @@ name: Daily Commit
 
 on:
   schedule:
-    - cron: '0 9 * * *'   # Runs every day at 9:00 AM UTC
-  workflow_dispatch:      # Allows you to manually run it from GitHub.com
+    - cron: '0 9 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write     # Gives the robot permission to push commits
-
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
       - name: Install dependencies
         run: pip install requests
-
       - name: Generate daily log
         run: python3 scripts/generate_daily_log.py
-
       - name: Commit and push
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git config user.name "Danilegend"
+          git config user.email "46860435+Danilegend@users.noreply.github.com."
           git add daily-logs/
-          git commit -m "Daily log for $(date +%Y-%m-%d)" || echo "No changes to commit"
+          git commit -m "Daily log for $(date +%Y-%m-%d)" || echo "No changes"
           git push origin main
