@@ -6,7 +6,7 @@ import requests
 import xml.etree.ElementTree as ET
 
 
-RSS_URL = "https://meseretmedia.substack.com/feed"
+RSS_URL = "https://www.meseretmedia.org/feed"
 
 REQUEST_HEADERS = {
     "User-Agent": (
