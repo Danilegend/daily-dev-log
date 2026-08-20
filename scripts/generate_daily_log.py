@@ -36,7 +36,10 @@ def fetch_zen():
     return FALLBACK_ZEN
 
 # === GENERATE DAILY MARKDOWN ===
-today = datetime.now().strftime("%Y-%m-%d")
+now = datetime.now()
+today = now.strftime("%Y-%m-%d")
+timestamp = now.strftime("%Y-%m-%d %H:%M:%S UTC")
+
 filename = os.path.join(LOG_DIR, f"{today}.md")
 
 quote = fetch_quote()
@@ -63,6 +66,9 @@ content = f"""# Daily Development Log
 - Reviewed Git and GitHub Actions
 - Automated daily logging with Python
 - Explored API integration for real-world data
+
+---
+_Log generated at: {timestamp}_
 """
 
 # Write the markdown file
@@ -75,7 +81,8 @@ data = {
     "quote": quote['quote'],
     "author": quote['author'],
     "zen": zen,
-    "file": filename
+    "file": filename,
+    "generated_at": timestamp
 }
 with open(JSON_FILE, "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
