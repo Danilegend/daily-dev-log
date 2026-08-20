@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Local LinkedIn development tests
+test_linkedin*.py
