@@ -1,0 +1,60 @@
+name: Amharic News Bot
+
+on:
+  schedule:
+    # Run every day at 10:00 UTC
+    - cron: '0 10 * * *'
+
+  workflow_dispatch:
+
+# Required so the bot can save the publication tracker.
+permissions:
+  contents: write
+
+# Prevent two bot runs from modifying the tracker simultaneously.
+concurrency:
+  group: amharic-news-bot
+  cancel-in-progress: false
+
+jobs:
+  publish-news:
+    name: Fetch and publish Amharic news
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run Amharic News Bot
+        env:
+          NEWS_BOT_PUBLISH: ${{ secrets.NEWS_BOT_PUBLISH }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python3 scripts/news_bot.py
+
+      - name: Commit publication tracker
+        run: |
+          git config user.name "Danilegend"
+          git config user.email "46860435+Danilegend@users.noreply.github.com"
+
+          git add data/published_news.json
+
+          if git diff --cached --quiet; then
+            echo "ℹ️ No tracker changes to commit."
+          else
+            git commit -m "chore: update published news tracker"
+            git push origin main
+          fi
